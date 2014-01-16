@@ -28,8 +28,6 @@ our $VERSION = '0.01';
 Perl interface to Ceilometer API v2. Docs at
 http://docs.openstack.org/developer/ceilometer/webapi/v2.html
 
-Perhaps a little code snippet.
-
     use Net::OpenStack::Ceilometer;
 
     my $ceilapi = Net::OpenStack::Ceilometer->new(
@@ -153,7 +151,7 @@ sub get_auth_token {
 
 =head2 resources
 
-my @resources = $ceilapi->resources();
+    my @resources = $ceilapi->resources();
 
 =cut
 
@@ -172,7 +170,7 @@ sub resources {
 
 =head2 resource
 
-my $resource = $ceilapi->resource( $id );
+    my $resource = $ceilapi->resource( $id );
 
 =cut
 
@@ -190,7 +188,7 @@ sub resource {
 
 Returns an arraref of all meters.
 
-my $meters = $ceilapi->meters();
+    my $meters = $ceilapi->meters();
 
 =cut
 
@@ -215,9 +213,9 @@ sub meters {
 
 =head2 meter, meter_by_name, meter_by_id
 
-my $meter = $ceilapi->meter_by_id( $id );
-my $meter = $ceilapi->meter( $id );
-my $meter = $ceilapi->meter_by_name( $name );
+    my $meter = $ceilapi->meter_by_id( $id );
+    my $meter = $ceilapi->meter( $id );
+    my $meter = $ceilapi->meter_by_name( $name );
 
 =cut
 
