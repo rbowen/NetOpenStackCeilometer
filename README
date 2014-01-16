@@ -66,10 +66,11 @@ SUBROUTINES/METHODS
   statistics
     Computes the statistics of the samples in the time range given.
 
-    Parameters: q (list(Query)) – Filter rules for the data to be returned.
-    groupby (list(unicode)) – Fields for group by aggregation period (int) –
-    Returned result will be an array of statistics for a period long of that
-    number of seconds
+    Parameters:
+
+        q (list(Query)) - Filter rules for the data to be returned.
+        groupby (list(unicode)) - Fields for group by aggregation
+        period (int) - Returned result will be an array of statistics for a period long of that number of seconds
 
   alarms
   call
@@ -100,11 +101,4 @@ LICENSE AND COPYRIGHT
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
-
-POD ERRORS
-    Hey! The above document had some coding errors, which are explained
-    below:
-
-    Around line 252:
-        Non-ASCII character seen before =encoding in '–'. Assuming UTF-8
 

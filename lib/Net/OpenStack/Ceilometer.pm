@@ -249,9 +249,10 @@ sub meter {
 Computes the statistics of the samples in the time range given.
 
 Parameters: 
-    q (list(Query)) – Filter rules for the data to be returned.
-    groupby (list(unicode)) – Fields for group by aggregation
-    period (int) – Returned result will be an array of statistics for a period long of that number of seconds
+
+    q (list(Query)) - Filter rules for the data to be returned.
+    groupby (list(unicode)) - Fields for group by aggregation
+    period (int) - Returned result will be an array of statistics for a period long of that number of seconds
 
 =cut
 
