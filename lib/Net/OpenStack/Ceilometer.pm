@@ -221,9 +221,8 @@ my $meter = $ceilapi->meter_by_name( $name );
 
 =cut
 
-# FIXME - This doesn't work - names aren't unique, as you may have the
-# same name in different resources. Not sure if this is going to be
-# useful.
+# Returns a list (ref) of all things with that name. Not sure how useful
+# this is. Revisit. TODO
 sub meter_by_name {
     my $self = shift;
     my $id   = shift;
@@ -265,6 +264,18 @@ sub statistics {
     my %parameters = @_;
 }
 
+=head2 alarms
+
+=cut
+
+sub alarms {
+    my $self = shift;
+    my $alarms = $self->call( '/alarms' );
+    $self->{alarms} = $alarms;
+
+    return $alarms;
+}
+
 =head2 call
 
 Makes the actual HTTP requests to the API. Don't call this yourself.
@@ -284,6 +295,7 @@ sub call {
     
     my $token = $self->{access};
     $req->header( 'X-Auth-Token' => $token->{token}{id} );
+    $req->header( 'User-Agent' => 'perl/Net::OpenStack::Ceilometer' );
 
     my $ua  = LWP::UserAgent->new();
     my $res = $ua->request( $req );
