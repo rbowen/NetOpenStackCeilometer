@@ -62,6 +62,8 @@ if you don't export anything, such as for a purely object-oriented module.
         host => 'localhost',
         port => '8777',
         url  => '/v2', # Leading slash, no trailing slash
+
+        http => 'https', # If you want https
     );
 
 =cut
@@ -77,9 +79,11 @@ sub new {
     my $username = $parameters{username} || 'admin';
     my $password = $parameters{password} || 'openstack';
 
+    my $http = $parameters{http} || 'http';
 
     my $self = bless(
         {
+            http => $http,
             host => $host,
             port => $port,
             url  => $url,
@@ -141,6 +145,35 @@ sub get_auth_token {
 
 }
 
+=head2 resources
+
+my @resources = $ceilapi->resources();
+
+=cut
+
+sub resources {
+    my $self = shift;
+
+    my $url =
+        $self->{http} . '://' . $self->{host} . ':' . $self->{port}
+      . $self->{url} . '/resources';
+    my $req = HTTP::Request->new( GET => $url );
+    
+    my $token = $self->{access};
+
+    $req->header( 'X-Auth-Token' => $token->{token}{id} );
+
+    my $ua  = LWP::UserAgent->new();
+    my $res = $ua->request( $req );
+    my $response = ( $res->decoded_content() );
+    my $resources = JSON::Parse::json_to_perl( $response );
+
+    # warn Dumper( $resources );
+
+    $self->{resources} = $resources;
+    return ( $resources );
+}
+
 =head1 AUTHOR
 
 Rich Bowen, C<< <rbow at cpan.org> >>
@@ -157,30 +190,15 @@ You can find documentation for this module with the perldoc command.
 
 
 You can also look for information at:
+https://github.com/rbowen/NetOpenStackCeilometer
 
-=over 4
+=head1 SOURCE
 
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Net-OpenStack-Ceilometer>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Net-OpenStack-Ceilometer>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Net-OpenStack-Ceilometer>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Net-OpenStack-Ceilometer/>
-
-=back
-
+GitHub: https://github.com/rbowen/NetOpenStackCeilometer
 
 =head1 ACKNOWLEDGEMENTS
 
+OpenStack Rocks
 
 =head1 LICENSE AND COPYRIGHT
 
