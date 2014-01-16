@@ -1,0 +1,18 @@
+#!/bin/perl
+use Net::OpenStack::Ceilometer;
+use Data::Dumper;
+
+my $a = Net::OpenStack::Ceilometer->new(
+    host     => '192.168.0.177',
+    username => 'admin',
+    password => '885d4b669cc04a1b', # This should be in a config file, eh?
+);
+
+my $meters = $a->meters();
+foreach my $m ( @$meters ) {
+    print $m->{name} . "\n";
+}
+
+print Dumper( $a->meter_by_name( 'memory' ) );
+
+

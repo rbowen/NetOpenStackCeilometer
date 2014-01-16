@@ -201,11 +201,13 @@ sub meters {
     $self->{meters} = $meters;
 
     foreach my $r ( @{ $self->{meters} } ) {
+
+        # By ID
         $self->{meter_by_id}->{ $r->{meter_id} } = $r;
-    # TODO: Keep track of meters by name, but these aren't unique - same
-    # name in different resources. Need to decide what we want to do
-    # here.
-        $self->{meter_by_name}->{ $r->{name} }   = $r;
+
+        # By name
+        $self->{meter_by_name}->{ $r->{name} } = [] unless ref( $self->{meter_by_name}->{ $r->{name} } );
+        push( @{ $self->{meter_by_name}->{ $r->{name} } }, $r );
     }
 
     return ( $meters );
@@ -242,9 +244,6 @@ sub meter {
 
     # populate meters
     $self->meters() unless ref( $self->{meters} );
-
-    # warn Dumper( $self );
-    # warn Dumper( $self->{ "meter_by_" . $by }->{$id} );
     return $self->{ "meter_by_" . $by }->{$id} || 0;
 }
 
