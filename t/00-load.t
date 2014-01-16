@@ -22,11 +22,6 @@ isnt( $a->{access}, 0, 'Testing that we got an auth token.' );
 is( $a->{access}{user}{username},
     $a->{username}, 'Sanity check - got the same username we sent' );
 
-my $resources = $a->resources();
-isa_ok( $resources, 'ARRAY' );
-
-my $resource = $resources->[0];
-is( $resource->{source}, 'openstack' );
 
 diag( "Testing Net::OpenStack::Ceilometer $Net::OpenStack::Ceilometer::VERSION, Perl $], $^X" );
 

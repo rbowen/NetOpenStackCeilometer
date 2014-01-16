@@ -131,7 +131,13 @@ sub get_auth_token {
     $req->content($auth_data);
 
     my $res = $ua->request($req);
-    my $access = JSON::Parse::json_to_perl( $res->decoded_content() );
+    my $access;
+    
+    eval{ $access = JSON::Parse::json_to_perl( $res->decoded_content() ); };
+    if ( $@ ) {
+        warn "INVALID JSON RETURNED. PANIC.";
+        return 0;
+    } 
 
     # warn Dumper( $access );
 
@@ -154,24 +160,137 @@ my @resources = $ceilapi->resources();
 sub resources {
     my $self = shift;
 
+    my $resources = $self->call( '/resources' );
+    $self->{resources} = $resources;
+
+    foreach my $r ( @{ $self->{resources} } ) {
+        $self->{resource_by_id}->{ $r->{resource_id} } = $r;
+    }
+
+    return ( $resources );
+}
+
+=head2 resource
+
+my $resource = $ceilapi->resource( $id );
+
+=cut
+
+sub resource {
+    my $self = shift;
+    my $id = shift;
+
+    # populate resources
+    $self->resources() unless ref( $self->{resources} );
+
+    return $self->{resource_by_id}->{ $id } || 0;
+}
+
+=head2 meters
+
+Returns an arraref of all meters.
+
+my $meters = $ceilapi->meters();
+
+=cut
+
+sub meters {
+    my $self = shift;
+
+    my $meters = $self->call( '/meters' );
+    $self->{meters} = $meters;
+
+    foreach my $r ( @{ $self->{meters} } ) {
+        $self->{meter_by_id}->{ $r->{meter_id} } = $r;
+    # TODO: Keep track of meters by name, but these aren't unique - same
+    # name in different resources. Need to decide what we want to do
+    # here.
+        $self->{meter_by_name}->{ $r->{name} }   = $r;
+    }
+
+    return ( $meters );
+}
+
+=head2 meter, meter_by_name, meter_by_id
+
+my $meter = $ceilapi->meter_by_id( $id );
+my $meter = $ceilapi->meter( $id );
+my $meter = $ceilapi->meter_by_name( $name );
+
+=cut
+
+# FIXME - This doesn't work - names aren't unique, as you may have the
+# same name in different resources. Not sure if this is going to be
+# useful.
+sub meter_by_name {
+    my $self = shift;
+    my $id   = shift;
+
+    return $self->meter( $id, 'name' );
+}
+
+sub meter_by_id {
+    my $self = shift;
+    my $id   = shift;
+    return $self->meter( $id, 'id' );
+}
+
+sub meter {
+    my $self = shift;
+    my $id   = shift;
+    my $by   = shift || 'id';
+
+    # populate meters
+    $self->meters() unless ref( $self->{meters} );
+
+    # warn Dumper( $self );
+    # warn Dumper( $self->{ "meter_by_" . $by }->{$id} );
+    return $self->{ "meter_by_" . $by }->{$id} || 0;
+}
+
+=head2 statistics
+
+Computes the statistics of the samples in the time range given.
+
+Parameters: 
+    q (list(Query)) – Filter rules for the data to be returned.
+    groupby (list(unicode)) – Fields for group by aggregation
+    period (int) – Returned result will be an array of statistics for a period long of that number of seconds
+
+=cut
+
+sub statistics {
+    my $self = shift;
+    my $meter = shift;
+
+    my %parameters = @_;
+}
+
+=head2 call
+
+Makes the actual HTTP requests to the API. Don't call this yourself.
+
+=cut
+
+sub call {
+    my $self = shift;
+    my $method = shift;
+
+    my %params = @_; # Query arguments
+
     my $url =
         $self->{http} . '://' . $self->{host} . ':' . $self->{port}
-      . $self->{url} . '/resources';
+      . $self->{url} . $method;
     my $req = HTTP::Request->new( GET => $url );
     
     my $token = $self->{access};
-
     $req->header( 'X-Auth-Token' => $token->{token}{id} );
 
     my $ua  = LWP::UserAgent->new();
     my $res = $ua->request( $req );
     my $response = ( $res->decoded_content() );
-    my $resources = JSON::Parse::json_to_perl( $response );
-
-    # warn Dumper( $resources );
-
-    $self->{resources} = $resources;
-    return ( $resources );
+    my $json = JSON::Parse::json_to_perl( $response );
+    return $json;
 }
 
 =head1 AUTHOR
