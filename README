@@ -8,8 +8,6 @@ SYNOPSIS
     Perl interface to Ceilometer API v2. Docs at
     http://docs.openstack.org/developer/ceilometer/webapi/v2.html
 
-    Perhaps a little code snippet.
-
         use Net::OpenStack::Ceilometer;
 
         my $ceilapi = Net::OpenStack::Ceilometer->new(
@@ -50,19 +48,20 @@ SUBROUTINES/METHODS
     Gets auth token from Horizon
 
   resources
-    my @resources = $ceilapi->resources();
+        my @resources = $ceilapi->resources();
 
   resource
-    my $resource = $ceilapi->resource( $id );
+        my $resource = $ceilapi->resource( $id );
 
   meters
     Returns an arraref of all meters.
 
-    my $meters = $ceilapi->meters();
+        my $meters = $ceilapi->meters();
 
   meter, meter_by_name, meter_by_id
-    my $meter = $ceilapi->meter_by_id( $id ); my $meter = $ceilapi->meter(
-    $id ); my $meter = $ceilapi->meter_by_name( $name );
+        my $meter = $ceilapi->meter_by_id( $id );
+        my $meter = $ceilapi->meter( $id );
+        my $meter = $ceilapi->meter_by_name( $name );
 
   statistics
     Computes the statistics of the samples in the time range given.
@@ -106,6 +105,6 @@ POD ERRORS
     Hey! The above document had some coding errors, which are explained
     below:
 
-    Around line 254:
+    Around line 252:
         Non-ASCII character seen before =encoding in '–'. Assuming UTF-8
 
