@@ -1,85 +1,111 @@
-Net-OpenStack-Ceilometer
+NAME
+    Net::OpenStack::Ceilometer - Interface to OpenStack Ceilometer API
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+VERSION
+    Version 0.01
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+SYNOPSIS
+    Perl interface to Ceilometer API v2. Docs at
+    http://docs.openstack.org/developer/ceilometer/webapi/v2.html
 
+    Perhaps a little code snippet.
 
-INSTALLATION
+        use Net::OpenStack::Ceilometer;
 
-To install this module, run the following commands:
+        my $ceilapi = Net::OpenStack::Ceilometer->new(
+            host => 'localhost',
+            port => '8777',
+            url  => '/v2', # Leading slash, no trailing slash
 
-	perl Makefile.PL
-	make
-	make test
-	make install
+            username => 'admin',
+            password => 'password',
+        );
 
-SUPPORT AND DOCUMENTATION
+        my @resources = $ceilapi->resources();
+        my $resource  = $ceulapi->resource( $resource_id );
 
-After installing, you can find documentation for this module with the
-perldoc command.
+        ... and so on
 
-    perldoc Net::OpenStack::Ceilometer
+        See http://docs.openstack.org/developer/ceilometer/webapi/v2.html
+        for full API doc.
 
-You can also look for information at:
+EXPORT
+    A list of functions that can be exported. You can delete this section if
+    you don't export anything, such as for a purely object-oriented module.
 
-    RT, CPAN's request tracker (report bugs here)
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Net-OpenStack-Ceilometer
+SUBROUTINES/METHODS
+  new
+        my $ceilapi = Net::OpenStack::Ceilometer->new(
+            host => 'localhost',
+            port => '8777',
+            url  => '/v2', # Leading slash, no trailing slash
 
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Net-OpenStack-Ceilometer
+            http => 'https', # If you want https
+        );
 
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Net-OpenStack-Ceilometer
+  get_auth_token
+    FIXME Note that this should probably call a higher-level Net::OpenStack
+    method, but those modules are still a mystery to me.
 
-    Search CPAN
-        http://search.cpan.org/dist/Net-OpenStack-Ceilometer/
+    Gets auth token from Horizon
 
+  resources
+    my @resources = $ceilapi->resources();
+
+  resource
+    my $resource = $ceilapi->resource( $id );
+
+  meters
+    Returns an arraref of all meters.
+
+    my $meters = $ceilapi->meters();
+
+  meter, meter_by_name, meter_by_id
+    my $meter = $ceilapi->meter_by_id( $id ); my $meter = $ceilapi->meter(
+    $id ); my $meter = $ceilapi->meter_by_name( $name );
+
+  statistics
+    Computes the statistics of the samples in the time range given.
+
+    Parameters: q (list(Query)) – Filter rules for the data to be returned.
+    groupby (list(unicode)) – Fields for group by aggregation period (int) –
+    Returned result will be an array of statistics for a period long of that
+    number of seconds
+
+  alarms
+  call
+    Makes the actual HTTP requests to the API. Don't call this yourself.
+
+AUTHOR
+    Rich Bowen, "<rbow at cpan.org>"
+
+BUGS
+    For the moment, report bugs to rbow at cpan.org
+
+SUPPORT
+    You can find documentation for this module with the perldoc command.
+
+        perldoc Net::OpenStack::Ceilometer
+
+    You can also look for information at:
+    https://github.com/rbowen/NetOpenStackCeilometer
+
+SOURCE
+    GitHub: https://github.com/rbowen/NetOpenStackCeilometer
+
+ACKNOWLEDGEMENTS
+    OpenStack Rocks
 
 LICENSE AND COPYRIGHT
+    Copyright 2014 Rich Bowen.
 
-Copyright (C) 2014 Rich Bowen
+    This program is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the the Artistic License (2.0). You may obtain a
-copy of the full license at:
+POD ERRORS
+    Hey! The above document had some coding errors, which are explained
+    below:
 
-L<http://www.perlfoundation.org/artistic_license_2_0>
-
-Any use, modification, and distribution of the Standard or Modified
-Versions is governed by this Artistic License. By using, modifying or
-distributing the Package, you accept this license. Do not use, modify,
-or distribute the Package, if you do not accept this license.
-
-If your Modified Version has been derived from a Modified Version made
-by someone other than you, you are nevertheless required to ensure that
-your Modified Version complies with the requirements of this license.
-
-This license does not grant you the right to use any trademark, service
-mark, tradename, or logo of the Copyright Holder.
-
-This license includes the non-exclusive, worldwide, free-of-charge
-patent license to make, have made, use, offer to sell, sell, import and
-otherwise transfer the Package with respect to any patent claims
-licensable by the Copyright Holder that are necessarily infringed by the
-Package. If you institute patent litigation (including a cross-claim or
-counterclaim) against any party alleging that the Package constitutes
-direct or contributory patent infringement, then this Artistic License
-to you shall terminate on the date that such litigation is filed.
-
-Disclaimer of Warranty: THE PACKAGE IS PROVIDED BY THE COPYRIGHT HOLDER
-AND CONTRIBUTORS "AS IS' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES.
-THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE, OR NON-INFRINGEMENT ARE DISCLAIMED TO THE EXTENT PERMITTED BY
-YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
-CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
-CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
-EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    Around line 254:
+        Non-ASCII character seen before =encoding in '–'. Assuming UTF-8
 
