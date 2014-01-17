@@ -260,7 +260,9 @@ Computes the statistics of the samples in the time range given.
 
 Parameters: 
 
-    q (list(Query)) - Filter rules for the data to be returned.
+    q (list(Query)) - Filter rules for the data to be returned - see
+    http://docs.openstack.org/developer/ceilometer/webapi/v2.html#samples-and-statistics
+    for full docs on what these queries are.
     groupby (list(unicode)) - Fields for group by aggregation
     period (int) - Returned result will be an array of statistics for a period long of that number of seconds
 
@@ -300,6 +302,18 @@ sub call {
     my $url =
         $self->{http} . '://' . $self->{host} . ':' . $self->{port}
       . $self->{url} . $method;
+
+    if ( %params ) {
+        my $qs;
+        my @query;
+        foreach my $k ( keys %params ) {
+            push @query, $k . '=' . $params{$k};
+        }
+        $qs = join('&', @query);
+
+        $url .= "?q=$qs";
+    }
+
     my $req = HTTP::Request->new( GET => $url );
     
     my $token = $self->{access};
