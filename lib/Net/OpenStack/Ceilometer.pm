@@ -105,6 +105,10 @@ method, but those modules are still a mystery to me.
 
 Gets auth token from Horizon
 
+TODO: This generates a "Deprecated: v2 API is deprecated as of Icehouse
+in favor of v3 API and may be removed in K" warning. So we need to
+update this to the v3 api at some point soon.
+
 =cut
 
 sub get_auth_token {
@@ -216,6 +220,12 @@ sub meters {
     my $meter = $ceilapi->meter_by_id( $id );
     my $meter = $ceilapi->meter( $id );
     my $meter = $ceilapi->meter_by_name( $name );
+
+Returns a hashref of details for the specified meter. Note that name is
+not unique, so by_name returns an arrayref of one or more hashrefs.
+
+Side effect: Populates the meters attribute of $self, if you haven't
+already called meters() previously.
 
 =cut
 
