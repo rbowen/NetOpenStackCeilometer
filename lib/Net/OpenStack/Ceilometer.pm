@@ -348,7 +348,7 @@ sub call {
             }
         }
         $url .= '?' . join( '&', @params );
-        warn "Fetching $url";
+        # warn "Fetching $url";
     }
     
     my $res = $ua->get( $url );
@@ -356,7 +356,7 @@ sub call {
     if ( $res->is_success ) {
         return JSON::Parse::json_to_perl( $res->decoded_content() );
     } else {
-        warn Dumper( $res->decoded_content() );
+        # warn Dumper( $res->decoded_content() );
         return 0;
     }
 
