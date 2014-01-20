@@ -16,7 +16,13 @@ Net::OpenStack::Ceilometer - Interface to OpenStack Ceilometer API
 
 =head1 VERSION
 
-Version 0.01
+Version 0.12
+
+=head1 WARNING
+
+This module is a work in progress. Please read the docs every time you
+get a new version, as the API may change as I implement more of the
+Ceilometer API and the limitations of what I've got so far are revealed.
 
 =cut
 
