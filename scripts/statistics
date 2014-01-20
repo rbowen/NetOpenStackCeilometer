@@ -30,16 +30,25 @@ if ($METER) {
 
     # Get the meter object first
     my $meter = $a->meter_by_id( $METER );
-    warn Dumper( $meter );
 
     my $stats = $a->statistics(
-        $METER,
-        [
-            {
+        $meter->{name},
+        [ # order matters!
+            [
                 'field' => 'resource_id',
                 'op'    => 'eq',
                 'value' => $meter->{resource_id},
-            }
+            ],
+            [
+                "field" => "timestamp",
+                "op"    => "ge",
+                "value" => "2011-06-01T00:00:00"
+            ],
+            [
+                "field" => "timestamp",
+                "op"    => "lt",
+                "value" => "2014-07-01T00:00:00"
+            ],
         ]
     );
 

@@ -20,7 +20,7 @@ Version 0.01
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.12';
 
 
 =head1 SYNOPSIS
@@ -205,6 +205,7 @@ sub meters {
     foreach my $r ( @{ $self->{meters} } ) {
 
         # By ID
+        $r->{meter_id} =~ s/\n$//; # Has a \n on the end for some reason ...
         $self->{meter_by_id}->{ $r->{meter_id} } = $r;
 
         # By name
@@ -262,17 +263,36 @@ Parameters:
 
     q (list(Query)) - Filter rules for the data to be returned - see
     http://docs.openstack.org/developer/ceilometer/webapi/v2.html#samples-and-statistics
-    for full docs on what these queries are.
+    for full docs on what these queries look like.
     groupby (list(unicode)) - Fields for group by aggregation
     period (int) - Returned result will be an array of statistics for a period long of that number of seconds
+
+    my $s = $a->statistics(
+        $meter_ID,
+        [
+            {
+                'field' => 'resource_id',
+                'op'    => 'eq',
+                'value' => '64da755c-9120-4236-bee1-54acafe24980',
+            }
+        ]
+    );
+
+Yes, the docs suck. Please see the examples at the above URL until we
+can doc this better.
+
+Also, since there are numerous ways to request stats, please expect this
+method to change to accomodate them all.
 
 =cut
 
 sub statistics {
-    my $self = shift;
-    my $meter = shift;
+    my $self       = shift;
+    my $meter      = shift;
+    my $parameters = shift;
 
-    my %parameters = @_;
+    my $stats = $self->call( '/meters/' . $meter . '/statistics', $parameters );
+    return $stats;
 }
 
 =head2 alarms
@@ -290,6 +310,8 @@ sub alarms {
 =head2 call
 
 Makes the actual HTTP requests to the API. Don't call this yourself.
+Also, don't count on the query stuff staying the way it is. 'Cause it
+kind of sucks.
 
 =cut
 
@@ -297,34 +319,41 @@ sub call {
     my $self = shift;
     my $method = shift;
 
-    my %params = @_; # Query arguments
+    my $params = shift; # Query arguments - arrayref
 
     my $url =
         $self->{http} . '://' . $self->{host} . ':' . $self->{port}
       . $self->{url} . $method;
 
-    if ( %params ) {
-        my $qs;
-        my @query;
-        foreach my $k ( keys %params ) {
-            push @query, $k . '=' . $params{$k};
-        }
-        $qs = join('&', @query);
+ 
+    my $ua  = LWP::UserAgent->new();
+    my $token = $self->{access};
+    $ua->default_header( 'X-Auth-Token' => $token->{token}{id} );
+    $ua->default_header( 'User-Agent'   => 'perl/Net::OpenStack::Ceilometer' );
+    $ua->default_header( 'Content-Type' => 'application/json' );
+    $ua->default_header( 'Accept'       => 'application/json' );
 
-        $url .= "?q=$qs";
+    if ($params) {
+
+        my @params;
+        foreach my $a ( @$params ) { # order matters!!
+            while ( my $q = shift @$a ) {
+                push( @params, 'q.'.$q . '=' . shift @$a )
+            }
+        }
+        $url .= '?' . join( '&', @params );
+        warn "Fetching $url";
+    }
+    
+    my $res = $ua->get( $url );
+
+    if ( $res->is_success ) {
+        return JSON::Parse::json_to_perl( $res->decoded_content() );
+    } else {
+        warn Dumper( $res->decoded_content() );
+        return 0;
     }
 
-    my $req = HTTP::Request->new( GET => $url );
-    
-    my $token = $self->{access};
-    $req->header( 'X-Auth-Token' => $token->{token}{id} );
-    $req->header( 'User-Agent' => 'perl/Net::OpenStack::Ceilometer' );
-
-    my $ua  = LWP::UserAgent->new();
-    my $res = $ua->request( $req );
-    my $response = ( $res->decoded_content() );
-    my $json = JSON::Parse::json_to_perl( $response );
-    return $json;
 }
 
 =head1 AUTHOR
