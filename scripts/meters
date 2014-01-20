@@ -1,6 +1,10 @@
 #!/bin/perl
 use Net::OpenStack::Ceilometer;
 use Data::Dumper;
+use Getopt::Long;
+
+use strict;
+use warnings;
 
 my $a = Net::OpenStack::Ceilometer->new(
     host     => '192.168.0.177',
@@ -8,11 +12,47 @@ my $a = Net::OpenStack::Ceilometer->new(
     password => '885d4b669cc04a1b', # This should be in a config file, eh?
 );
 
-my $meters = $a->meters();
-foreach my $m ( @$meters ) {
-    print $m->{name} . "\n";
+our $HELP = 0;
+our $METER = '';
+
+unless (
+    GetOptions(
+        'help'    => \$HELP,
+        'meter=s' => \$METER,
+    )
+  )
+{
+    usage( '', 1 );
 }
 
-print Dumper( $a->meter_by_name( 'memory' ) );
+if ($METER) {
+    print Dumper( $a->meter_by_name($METER) );
+} else {
+    my $meters = $a->meters();
+    foreach my $m (@$meters) {
+        print $m->{name} . "\t";
+        print $m->{unit} . "\t";
+        print $m->{meter_id};
+    }
+}
+
+sub usage { # {{{
+    my $message = shift || '';
+    my $exit_code = shift || 0;
+    print(<<EOU);
+$message
+
+$0 {--usage | --help}
+  Display this message.
+
+$0 -m 'meter_name'
+    Shows info about the specified meter. (Note that names may not be
+    unique.)
+
+Lists all meters collected
+
+EOU
+    exit($exit_code);
+} # }}}
 
 
