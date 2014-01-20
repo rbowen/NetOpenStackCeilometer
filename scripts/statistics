@@ -12,7 +12,7 @@ my $a = Net::OpenStack::Ceilometer->new(
     password => '885d4b669cc04a1b', # TODO: Load this from config
 );
 
-our $HELP = 0;
+our $HELP  = 0;
 our $METER = '';
 
 # {{{ GetOpt
@@ -27,15 +27,27 @@ unless (
 } # }}}
 
 if ($METER) {
-    print Dumper( $a->meter_by_name($METER) );
+
+    # Get the meter object first
+    my $meter = $a->meter_by_id( $METER );
+    warn Dumper( $meter );
+
+    my $stats = $a->statistics(
+        $METER,
+        [
+            {
+                'field' => 'resource_id',
+                'op'    => 'eq',
+                'value' => $meter->{resource_id},
+            }
+        ]
+    );
+
+    print Dumper( $stats );
 } else {
-    my $meters = $a->meters();
-    foreach my $m (@$meters) {
-        print $m->{name} . "\t";
-        print $m->{unit} . "\t";
-        print $m->{meter_id} . "\n";
-    }
+    usage("You must specify a meter you wish to have stats on.", 0);
 }
+
 
 sub usage { # {{{
     my $message = shift || '';
@@ -47,13 +59,10 @@ $0 {--usage | --help}
   Display this message.
 
 $0 -m 'meter_name'
-    Shows info about the specified meter. (Note that names may not be
-    unique.)
+    Dumps stats for that meter
 
-Lists all meters collected
+Display statistics for a specified meter.
 
 EOU
     exit($exit_code);
 } # }}}
-
-
