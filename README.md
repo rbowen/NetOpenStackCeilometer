@@ -55,6 +55,10 @@ method, but those modules are still a mystery to me.
 
 Gets auth token from Horizon
 
+TODO: This generates a "Deprecated: v2 API is deprecated as of Icehouse
+in favor of v3 API and may be removed in K" warning. So we need to
+update this to the v3 api at some point soon.
+
 ## resources
 
     my @resources = $ceilapi->resources();
@@ -75,21 +79,48 @@ Returns an arraref of all meters.
     my $meter = $ceilapi->meter( $id );
     my $meter = $ceilapi->meter_by_name( $name );
 
+Returns a hashref of details for the specified meter. Note that name is
+not unique, so by\_name returns an arrayref of one or more hashrefs.
+
+Side effect: Populates the meters attribute of $self, if you haven't
+already called meters() previously.
+
 ## statistics
 
 Computes the statistics of the samples in the time range given.
 
 Parameters: 
 
-    q (list(Query)) - Filter rules for the data to be returned.
+    q (list(Query)) - Filter rules for the data to be returned - see
+    http://docs.openstack.org/developer/ceilometer/webapi/v2.html#samples-and-statistics
+    for full docs on what these queries look like.
     groupby (list(unicode)) - Fields for group by aggregation
     period (int) - Returned result will be an array of statistics for a period long of that number of seconds
+
+    my $s = $a->statistics(
+        $meter_ID,
+        [
+            {
+                'field' => 'resource_id',
+                'op'    => 'eq',
+                'value' => '64da755c-9120-4236-bee1-54acafe24980',
+            }
+        ]
+    );
+
+Yes, the docs suck. Please see the examples at the above URL until we
+can doc this better.
+
+Also, since there are numerous ways to request stats, please expect this
+method to change to accomodate them all.
 
 ## alarms
 
 ## call
 
 Makes the actual HTTP requests to the API. Don't call this yourself.
+Also, don't count on the query stuff staying the way it is. 'Cause it
+kind of sucks.
 
 # AUTHOR
 
