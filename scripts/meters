@@ -9,7 +9,7 @@ use warnings;
 my $a = Net::OpenStack::Ceilometer->new(
     host     => '192.168.0.177',
     username => 'admin',
-    password => '885d4b669cc04a1b', # TODO: Load this from config
+    password => '6507ed71383b4544', # TODO: Load this from config
 );
 
 our $HELP = 0;

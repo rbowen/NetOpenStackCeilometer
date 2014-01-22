@@ -13,7 +13,7 @@ BEGIN {
 my $a = Net::OpenStack::Ceilometer->new(
     host     => '192.168.0.177',
     username => 'admin',
-    password => '885d4b669cc04a1b', # This should be in a config file, eh?
+    password => '6507ed71383b4544', # This should be in a config file, eh?
 );
 isa_ok( $a, 'Net::OpenStack::Ceilometer' );
 

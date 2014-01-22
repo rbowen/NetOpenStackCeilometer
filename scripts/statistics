@@ -9,7 +9,7 @@ use warnings;
 my $a = Net::OpenStack::Ceilometer->new(
     host     => '192.168.0.177',
     username => 'admin',
-    password => '885d4b669cc04a1b', # TODO: Load this from config
+    password => '6507ed71383b4544', # TODO: Load this from config
 );
 
 our $HELP  = 0;
@@ -39,16 +39,16 @@ if ($METER) {
                 'op'    => 'eq',
                 'value' => $meter->{resource_id},
             ],
-            [
-                "field" => "timestamp",
-                "op"    => "ge",
-                "value" => "2011-06-01T00:00:00"
-            ],
-            [
-                "field" => "timestamp",
-                "op"    => "lt",
-                "value" => "2014-07-01T00:00:00"
-            ],
+            # [
+                # "field" => "timestamp",
+                # "op"    => "ge",
+                # "value" => "2012-01-22T15:40:00"
+            # ],
+            # [
+                # "field" => "timestamp",
+                # "op"    => "lt",
+                # "value" => "2014-01-22T16:00:00"
+            # ],
         ]
     );
 
